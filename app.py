@@ -8,7 +8,6 @@ from flask import * # Flask, g, redirect, render_template, request, url_for
 from functools import wraps
 
 app = Flask(__name__)
-API_KEY = 'uz220NmV1MRNLR3SKQRu4d5VgJNtojDo'
 
 # These should make it so your Flask app always returns the latest version of
 # your HTML, CSS, and JS files. We would remove them from a production deploy,
@@ -172,9 +171,11 @@ def room(room_id):
             room=room, user=user)
 
 # -------------------------------- API ROUTES ----------------------------------
-def verify_api(request):
+def verify_api(request, user):
     key = request.headers.get('x-api-key')
-    if key == API_KEY:
+    db_key = query_db("select api_key from users where id = ?",
+                      [user['id']], one=True)['api_key']
+    if key == db_key:
         return True
     else:
         print('authentication failed')
@@ -184,13 +185,12 @@ def verify_api(request):
 # POST to change the user's name
 @app.route('/api/user/name', methods=['POST'])
 def update_username():
-    if verify_api(request) is not True:
-        return verify_api(request)
-    
     print('launched change username')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
+    if verify_api(request, user) is not True:
+        return verify_api(request, user)
     
     user_id = request.cookies.get('user_id')
     new_name = request.json.get('username')
@@ -208,13 +208,12 @@ UPDATE users SET name = ? WHERE id = ?
 # POST to change the user's password
 @app.route('/api/user/password', methods=['POST'])
 def update_password():
-    if verify_api(request) is not True:
-        return verify_api(request)
-
     print('launched change password')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
+    if verify_api(request, user) is not True:
+        return verify_api(request, user)
     
     user_id = request.cookies.get('user_id')
     #print(request.json)
@@ -236,13 +235,12 @@ UPDATE users SET password = ? WHERE id = ?
 # POST to change the name of a room
 @app.route('/api/room/<int:room_id>', methods=['POST'])
 def update_roomname(room_id):
-    if verify_api(request) is not True:
-        return verify_api(request)
-    
     print('change room name')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
+    if verify_api(request, user) is not True:
+        return verify_api(request, user)
     
     new_name = request.json.get('name')
     print(new_name)
@@ -260,8 +258,11 @@ UPDATE rooms SET name = ? WHERE id = ?
 # GET to get all the messages in a room
 @app.route('/api/get_messages/rooms/<int:room_id>', methods=['GET'])
 def api_get_messages(room_id):
-    if verify_api(request) is not True:
-        return verify_api(request)
+    user = get_user_from_cookie(request)
+    if user is None:
+        return redirect('/')
+    if verify_api(request, user) is not True:
+        return verify_api(request, user)
     
     messages = query_db('''
 SELECT messages.id, users.name AS author, messages.body, messages.room_id
@@ -278,13 +279,12 @@ WHERE messages.room_id = ?
 # POST to post a new message to a room
 @app.route('/api/post_message/rooms/<int:room_id>', methods=['POST'])
 def post_message(room_id):
-    if verify_api(request) is not True:
-        return verify_api(request)
-    
     print('launched post', room_id)
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
+    if verify_api(request, user) is not True:
+        return verify_api(request, user)
 
     #print('here')
     user_id = request.cookies.get('user_id')

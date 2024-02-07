@@ -1,12 +1,9 @@
-const API_KEY = 'z220NmV1MRNLR3SKQRu4d5VgJNtojDo';
-
-
 /* For index.html */
 
 // TODO: If a user clicks to create a chat, create an auth key for them
 // and save it. Redirect the user to /chat/<chat_id>
 function createChat() {  //???
-  return;
+    return;
 }
 
 
@@ -23,7 +20,7 @@ function updateID(name_or_password) {
     fetch(route, {
         method: 'POST',
         headers: {
-            'x-api-key': API_KEY,
+            'x-api-key': WATCH_PARTY_API_KEY,
             "Content-Type": "application/json"
           },
         body: JSON.stringify(messageData)
@@ -55,7 +52,7 @@ function updateRoomName() {
     fetch(`/api/room/${roomId}`, {
         method: 'POST',
         headers: {
-            'x-api-key': API_KEY,
+            'x-api-key': WATCH_PARTY_API_KEY,
             "Content-Type": "application/json"
           },
         body: JSON.stringify(messageData)
@@ -106,7 +103,7 @@ function postMessage() {
     fetch(`/api/post_message/rooms/${roomId}`, {
         method: 'POST',
         headers: {
-            'x-api-key': API_KEY,
+            'x-api-key': WATCH_PARTY_API_KEY,
             "Content-Type": "application/json"
           },
         body: JSON.stringify(messageData)
@@ -127,7 +124,7 @@ function getMessages() {
     fetch(`/api/get_messages/rooms/${roomId}`, {
         method: 'GET',
         headers: {
-            'x-api-key': API_KEY,
+            'x-api-key': WATCH_PARTY_API_KEY,
             "Content-Type": "application/json"
         },
     })
@@ -177,4 +174,5 @@ function startMessagePolling() {
       getMessages();
     }
 }
+
 setInterval(startMessagePolling, 100);
