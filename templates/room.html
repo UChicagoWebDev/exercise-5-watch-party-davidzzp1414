@@ -11,7 +11,7 @@
     WATCH_PARTY_API_KEY = '{{ user.api_key }}';
     {% endif %}
   </script>
-  <script src="/static/script.js"></script>
+  
 </head>
 <body>
 
@@ -25,16 +25,16 @@
       <!-- TODO: when clicked, 
         - remove `hide` from the `edit` h3 below
         - add `hide` to the parent h3 here -->
-      <a href="#"><span class="material-symbols-outlined">edit</span></a></h3>
+      <a id="edit_button" href="#"><span class="material-symbols-outlined">edit</span></a></h3>
     </h3>
     <h3 class="edit hide">
-      <input value="{{ room['name'] }}">
+      <input id='input_field' value="{{ room['name'] }}">
       <!-- TODO: when clicked,
         - POST to update the room name
         - update `roomName` above with the new name
         - remove `hide` from the `display` h3 above
         - add `hide` to the parent h3 here -->
-      <a href="#"><span class="material-symbols-outlined">save</span></a></h3>
+      <a id="display_button" href="#"><span class="material-symbols-outlined">save</span></a></h3>
     </h3>
     <div class="invite">
       Invite users to this chat at:
@@ -49,37 +49,39 @@
   {% if room %}
   <div class="chat">
     <div class="comment_box">
-      <form>
+      <form id="comment_form">
         <label for="comment">What do you have to say?</label>
-        <textarea name="comment"></textarea>
-        <button type="submit" value="Post">Post</button>
+        <textarea id="comment_content" name="comment"></textarea>
+        <button id="PostButton" type="submit" value="Post">Post</button>
       </form>
     </div>
     <div class="messages">
-      <message>
-        <author>Mr Chatterworth</author>
-        <content>Good evening! And how is everyone feeling?</content>
-      </message>
-      <message>
-        <author>big chats</author>
-        <content>gr8 lol</content>
-      </message>
-      <message>
-        <author>Mr Chatterworth</author>
-        <content>Splendid!</content>
-      </message>
-      <message>
-        <author>Chatty Cat</author>
-        <content>
-          Meow meow meow meow meow meow meow meow meow meow meow 
-          meow meow meow meow meow meow meow meow meow meow meow 
-          meow meow meow meow meow meow meow meow meow meow meow 
-        </content>
-      </message>
-      <message>
-        <author>Mr Chatterworth</author>
-        <content>Indeed, M. Cat. Indeed. 🧐</content>
-      </message>
+        <!--
+        <message>
+            <author>Mr Chatterworth</author>
+            <content>Good evening! And how is everyone feeling?</content>
+          </message>
+          <message>
+            <author>big chats</author>
+            <content>gr8 lol</content>
+          </message>
+          <message>
+            <author>Mr Chatterworth</author>
+            <content>Splendid!</content>
+          </message>
+          <message>
+            <author>Chatty Cat</author>
+            <content>
+              Meow meow meow meow meow meow meow meow meow meow meow 
+              meow meow meow meow meow meow meow meow meow meow meow 
+              meow meow meow meow meow meow meow meow meow meow meow 
+            </content>
+          </message>
+          <message>
+            <author>Mr Chatterworth</author>
+            <content>Indeed, M. Cat. Indeed. 🧐</content>
+        </message>
+        -->
     </div>
   </div>
   {% else %}
@@ -89,9 +91,7 @@
 </div>
 </div>
 
-<script>
-startMessagePolling();
-</script>
 
+<script src="/static/script.js"></script>
 </body>
 </html>
