@@ -304,5 +304,6 @@ INSERT INTO messages (user_id, room_id, body) VALUES (?, ?, ?) RETURNING user_id
     return jsonify({'success': True})
 
 
+
 if __name__ == '__main__':
     app.run()

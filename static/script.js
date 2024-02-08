@@ -1,13 +1,4 @@
-/* For index.html */
-
-// TODO: If a user clicks to create a chat, create an auth key for them
-// and save it. Redirect the user to /chat/<chat_id>
-function createChat() {  //???
-    return;
-}
-
-
-/* For updating username or password */
+// For updating username or password
 function updateID(name_or_password) {
     var route;
     if (name_or_password.localeCompare('name') == 0) {
@@ -31,7 +22,6 @@ function updateID(name_or_password) {
         console.error(error);
     });
 }
-
 if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('profile') == 0){
     document.querySelector("#username_button").addEventListener('click', (e) => {
         e.preventDefault();
@@ -44,7 +34,7 @@ if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('profil
 }
 
 
-/* For updating room name */
+// For updating room name
 function updateRoomName() {
     const roomId = new URL(window.location.href).pathname.split('/')[2];
     const new_name = document.querySelector('#input_field').value;
@@ -66,7 +56,6 @@ function updateRoomName() {
         console.error(error);
     });
 }
-
 if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
     document.querySelector("#edit_button").addEventListener('click', (e) => {
         //console.log('clicked edit');
@@ -76,7 +65,6 @@ if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms'
         e2.setAttribute('class', 'edit');
     });
 }
-
 if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
     document.querySelector("#display_button").addEventListener('click', (e) => {
         //console.log('clicked save');
@@ -84,17 +72,12 @@ if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms'
         e1.setAttribute('class', 'display')
         const e2 = document.querySelector('.edit');
         e2.setAttribute('class', 'edit hide');
-        
         updateRoomName();
     });
 }
 
 
-/* For room.html */
-
-// TODO: Fetch the list of existing room messages.
-// POST to the API when the user posts a new message.
-// Automatically poll for new messages on a regular interval.
+// For posting and receiving messages
 function postMessage() {
     const roomId = new URL(window.location.href).pathname.split('/')[2];
     const msg = document.getElementById('comment_content').value;
@@ -117,6 +100,12 @@ function postMessage() {
       console.error('Error posting message:', error);
     });
 }
+if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
+    document.addEventListener('submit', (e) => {
+        e.preventDefault();
+        postMessage();
+    });
+}
 
 
 function getMessages() {
@@ -134,45 +123,29 @@ function getMessages() {
       })
       .catch(error => console.error('Error:', error));
 }
-
 function displayMessages(messages) {
     const messagesContainer = document.querySelector('.messages');
     messagesContainer.innerHTML = '';
-    if (typeof messages == 'string' || messages instanceof String) {
-        const messageElement = document.createElement('div');
-        messageElement.innerHTML = `${messages}`;
-        messagesContainer.appendChild(messageElement);
-    } else {
-        messages.forEach(message => {
+    messages.forEach(message => {
         const messageElement = document.createElement('message');
         messageElement.innerHTML = `
             <author>${message.author}</author>
             <content>${message.body}</content>
         `;
         messagesContainer.appendChild(messageElement);
-        });
-    }
+    });
 }
-  
-
 if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
     document.addEventListener('DOMContentLoaded', () => {
         getMessages();
     });
 }
 
-if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
-  document.addEventListener('submit', (e) => {
-      e.preventDefault();
-      postMessage();
-  });
-}
 
-
+// For message polling
 function startMessagePolling() {
     if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
       getMessages();
     }
 }
-
 setInterval(startMessagePolling, 100);
