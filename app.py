@@ -185,7 +185,6 @@ def verify_api(request, user):
 # POST to change the user's name
 @app.route('/api/user/name', methods=['POST'])
 def update_username():
-    print('launched change username')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
@@ -194,11 +193,10 @@ def update_username():
     
     user_id = request.cookies.get('user_id')
     new_name = request.json.get('username')
-    print(new_name)
     if not new_name:
         return jsonify({'error': 'No username provided'}), 400
     query = """
-UPDATE users SET name = ? WHERE id = ?
+update users set name = ? where id = ?
             """
     result = query_db(query, [new_name, user_id], one=True)
     print('username updated')
@@ -208,7 +206,6 @@ UPDATE users SET name = ? WHERE id = ?
 # POST to change the user's password
 @app.route('/api/user/password', methods=['POST'])
 def update_password():
-    print('launched change password')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
@@ -216,26 +213,23 @@ def update_password():
         return verify_api(request, user)
     
     user_id = request.cookies.get('user_id')
-    #print(request.json)
     name = request.json.get('username')
     new_password = request.json.get('password')
-    #print(new_password)
     if not new_password:
-        return jsonify({'error': 'No password provided'}), 400
+        return jsonify({'error': 'No password provided'}), 401
     query = """
-UPDATE users SET password = ? WHERE id = ?
+update users set password = ? where id = ?
             """
     result = query_db(query, [new_password, user_id], one=True)
     resp = make_response(redirect('/profile'))
     resp.set_cookie('user_password', new_password)
-    #print('password changed to', request.cookies.get('user_password'))
+    print('password updated')
     return resp
 
 
 # POST to change the name of a room
 @app.route('/api/room/<int:room_id>', methods=['POST'])
 def update_roomname(room_id):
-    print('change room name')
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
@@ -243,12 +237,11 @@ def update_roomname(room_id):
         return verify_api(request, user)
     
     new_name = request.json.get('name')
-    print(new_name)
     if not new_name:
-        return jsonify({'error': 'No room name provided'}), 400
+        return jsonify({'error': 'No room name provided'}), 402
     
     query = """
-UPDATE rooms SET name = ? WHERE id = ?
+update rooms set name = ? where id = ?
             """
     result = query_db(query, [new_name, room_id], one=True)
     print('room name updated')
@@ -265,45 +258,34 @@ def api_get_messages(room_id):
         return verify_api(request, user)
     
     messages = query_db('''
-SELECT messages.id, users.name AS author, messages.body, messages.room_id
-FROM messages
-INNER JOIN users ON messages.user_id = users.id
-WHERE messages.room_id = ?
+select messages.id, users.name as author, messages.body, messages.room_id
+from messages inner join users on messages.user_id = users.id
+where messages.room_id = ?
                         ''', [room_id])
     if messages is None:
         return jsonify('No message in this room yet!')
     else:
-        return jsonify([{'id': msg['id'], 'author': msg['author'], 'body': msg['body'], 'room_id': msg['room_id']} for msg in messages])
+        return jsonify([{'author': msg['author'], 'body': msg['body']} for msg in messages])
 
 
 # POST to post a new message to a room
 @app.route('/api/post_message/rooms/<int:room_id>', methods=['POST'])
 def post_message(room_id):
-    print('launched post', room_id)
     user = get_user_from_cookie(request)
     if user is None:
         return redirect('/')
     if verify_api(request, user) is not True:
         return verify_api(request, user)
 
-    #print('here')
     user_id = request.cookies.get('user_id')
-    #print('here')
-    #print(request.json)
     message = request.json.get('comment')
-    print(message)
-    #print('above is message')
     
     if not message:
-        return jsonify({'error': 'No message provided'}), 400
+        return jsonify({'error': 'No message provided'}), 405
     query = """
-INSERT INTO messages (user_id, room_id, body) VALUES (?, ?, ?) RETURNING user_id
+insert into messages (user_id, room_id, body) values (?, ?, ?)
+returning user_id
             """
     result = query_db(query, [user_id, room_id, message], one=True)
-    print('inserted')
+    print('new message inserted to DB')
     return jsonify({'success': True})
-
-
-
-if __name__ == '__main__':
-    app.run()

@@ -50,7 +50,7 @@ function updateRoomName() {
     .then(response =>  response.json())
     .then(data => {
       document.querySelector('.roomName').innerHTML = new_name;
-      console.log('Room name changed:', data);
+      //console.log('Room name changed:', data);
     })
     .catch(error => {
         console.error(error);
@@ -92,10 +92,6 @@ function postMessage() {
         body: JSON.stringify(messageData)
     })
     .then(response =>  response.json())
-    .then(data => {
-      console.log('Message posted:', data);
-      //getMessages(roomId);
-    })
     .catch(error => {
       console.error('Error posting message:', error);
     });
