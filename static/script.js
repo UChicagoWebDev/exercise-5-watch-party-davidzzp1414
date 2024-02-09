@@ -122,14 +122,20 @@ function getMessages() {
 function displayMessages(messages) {
     const messagesContainer = document.querySelector('.messages');
     messagesContainer.innerHTML = '';
-    messages.forEach(message => {
+    if (typeof messages === 'string' || messages instanceof String) {
         const messageElement = document.createElement('message');
-        messageElement.innerHTML = `
-            <author>${message.author}</author>
-            <content>${message.body}</content>
-        `;
+        messageElement.innerHTML = `<span>${messages}</span>`;
         messagesContainer.appendChild(messageElement);
-    });
+    } else {
+        messages.forEach(message => {
+            const messageElement = document.createElement('message');
+            messageElement.innerHTML = `
+                <author>${message.author}</author>
+                <content>${message.body}</content>
+            `;
+            messagesContainer.appendChild(messageElement);
+        });
+    }
 }
 if ((new URL(window.location.href).pathname.split('/')[1]).localeCompare('rooms') == 0){
     document.addEventListener('DOMContentLoaded', () => {

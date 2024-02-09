@@ -178,7 +178,7 @@ def verify_api(request, user):
     if key == db_key:
         return True
     else:
-        print('authentication failed')
+        print('API authentication failed')
         return jsonify({"error": "unauthorized API key"}), 406
 
 
@@ -198,7 +198,7 @@ def update_username():
     query = """
 update users set name = ? where id = ?
             """
-    result = query_db(query, [new_name, user_id], one=True)
+    query_db(query, [new_name, user_id], one=True)
     print('username updated')
     return jsonify({'success': True})
     
@@ -220,7 +220,7 @@ def update_password():
     query = """
 update users set password = ? where id = ?
             """
-    result = query_db(query, [new_password, user_id], one=True)
+    query_db(query, [new_password, user_id], one=True)
     resp = make_response(redirect('/profile'))
     resp.set_cookie('user_password', new_password)
     print('password updated')
@@ -243,7 +243,7 @@ def update_roomname(room_id):
     query = """
 update rooms set name = ? where id = ?
             """
-    result = query_db(query, [new_name, room_id], one=True)
+    query_db(query, [new_name, room_id], one=True)
     print('room name updated')
     return jsonify({'success': True})
 
@@ -284,8 +284,7 @@ def post_message(room_id):
         return jsonify({'error': 'No message provided'}), 405
     query = """
 insert into messages (user_id, room_id, body) values (?, ?, ?)
-returning user_id
             """
-    result = query_db(query, [user_id, room_id, message], one=True)
+    query_db(query, [user_id, room_id, message], one=True)
     print('new message inserted to DB')
     return jsonify({'success': True})
