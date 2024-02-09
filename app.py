@@ -217,6 +217,7 @@ def update_password():
     new_password = request.json.get('password')
     if not new_password:
         return jsonify({'error': 'No password provided'}), 401
+    
     query = """
 update users set password = ? where id = ?
             """
